@@ -1,0 +1,171 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+
+header {
+    padding: 10px;
+    display: flex;
+    font-family: 'Playfair Display', serif;
+    justify-content: space-around;
+    background-color: black;
+    color: white;
+}
+
+header h1 {
+    font-size: 35px;
+}
+
+
+header img {
+    width: 40px;
+    height: 40px;
+    margin: 0 20px 0 0;
+
+}
+
+header div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.instruct {
+    margin-top: 50px;
+    margin-left: 2%;
+}
+
+.instruct  p{
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+}
+
+.cards img {
+    height: 100%;
+}
+
+.cards {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.customcard {
+    transform: scale(1);
+    transition: all 0.2s;
+}
+
+.customcard:hover {
+    transform: scale(1.07);
+}
+
+.simulation {
+    width: 80%;
+    margin: 50px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+    padding: 20px;
+}
+
+.pred {
+    width: 110px;
+    height: 70px;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pred p {
+    margin-bottom: 0;
+}
+
+
+.simcard {
+    height: 337px;
+    overflow: hidden;
+    position: relative;
+}
+
+.spinnercustom {
+    position: absolute;
+    top: 50%;  
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.simcard canvas {
+    height: 100%;
+}
+
+.simcard_child {
+    overflow:hidden;
+    position: relative;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+}
+
+.simulation_header {
+    display: none;
+}
+
+.simcard_short {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.simcard video, .simcard canvas {
+    position: relative;
+    width: 100%;
+    z-index: 10;
+}
+
+.arrow-container {
+    position: relative;
+    width: 105px;
+    display: flex;
+    align-items: center;
+}
+
+.arrow_head {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid black;
+    transform: rotate(90deg) scale(2);
+}
+
+.arrow_rest {
+    width: 100px;
+    height: 7px;
+    background-color: black;
+}
+
+
+#video_sel_hidden, #frame_canvas_hidden {
+    position: absolute;
+    z-index: -1;
+}
+
+.big_box {
+    width: 50%;
+    height: 337px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.child_box {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+

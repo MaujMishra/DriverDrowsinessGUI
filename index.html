@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Driver Drowsiness Detection</title>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+        <link href="./style.css" type="text/css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <script src="./main.js" type="text/javascript" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"> </script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <py-config>
+            packages = ["numpy", "opencv-python"]
+        </py-config>
+        <header>
+            <div>
+                <h1>Driver Drowsiness Detection</h1>
+            </div>
+            <div>
+                <img src="./Media/blog.png" alt="blog-icon"/>
+                <img src="./Media/github.png" alt="github-icon"/>
+            </div>
+        </header>
+        <main>
+            <div class="instruct">
+                <p> - Click on any of the videos to run the simulation</p>
+            </div>
+            <div class="cards">
+                
+                <div class="card customcard" style="width: 12rem;">
+                    <img class="button" id="one" src="./Media/one.png" alt="card1"/>
+                </div>
+                <div class="card customcard" style="width: 12rem;">
+                    <img class="button" id="two" src="./Media/two.png" alt="card2"/>
+                </div>
+                <div class="card customcard" style="width: 12rem;">
+                    <img class="button" id="three" src="./Media/three.png" alt="card3"/>
+                </div>
+            </div>
+            <div class="simulation_header">
+                <div class="instruct">
+                    <h2>Simulation</h2>
+                </div>
+                <div class="simulation">
+                    <div class="card simcard" style="width: 12rem;">
+                        <div class="spinnercustom"><div class="spinner-border" role="status"></div></div>
+                        <video src="" id="video_sel"  autoplay muted></video>
+                        <video src="" id="video_sel_hidden" hidden muted autoplay width="1080" height="1920"></video>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="arrow_rest"></div>
+                        <div class="arrow_head"></div>
+                    </div>
+                    <div class="card simcard" style="width: 12rem;">
+                        <div class="spinnercustom"><div class="spinner-border" role="status"></div></div>
+                        <canvas id="frame_canvas" width="250" height="470"></canvas>
+                        <canvas id="frame_canvas_hidden" hidden width="1080" height="1920"></canvas>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="arrow_rest"></div>
+                        <div class="arrow_head"></div>
+                    </div>
+                    <div class="card simcard" style="width: 12rem;">
+                        <div class="spinnercustom"><div class="spinner-border" role="status"></div></div>
+                        <canvas id="mediapipe_canvas" width="250" height="470"></canvas>
+                    </div>
+                </div>
+                <div class="simulation">
+                    <div class="big_box">
+                        <div class="child_box">
+                            <div class="simcard_child">
+                                <img src="./Media/blank.png" alt="left_eye" id="leftImg" width="100" height="70"/>
+                            </div>
+                            <div class="arrow-container">
+                                <div class="arrow_rest"></div>
+                                <div class="arrow_head"></div>
+                            </div>
+                            <div class="pred"><p id="leftpred"></p></div>
+                        </div>
+                        <div class="child_box">
+                            <div class="simcard_child">
+                                <img src="./Media/blank.png" alt="right_eye" id="rightImg" width="100" height="70"/>
+                            </div>
+                            <div class="arrow-container">
+                                <div class="arrow_rest"></div>
+                                <div class="arrow_head"></div>
+                            </div>
+                            <div class="pred"><p id="rightpred"></p></div>
+                        </div>
+                    </div>
+                    <div class="arrow-container">
+                        <div class="arrow_rest"></div>
+                        <div class="arrow_head"></div>
+                    </div>
+                    <div class="pred"><p id="overallpred"></p></div>
+                </div>
+            </div>
+        </main>
+    
+        <py-script>
+            import js
+            import cv2
+            import numpy as np
+            import base64
+
+            def get_object(param):
+                print(type(param))
+                print(param)
+
+            def bytes_to_data_url(img_bytes):
+                return base64.b64encode(img_bytes).decode("ascii")
+
+            def get_image(dataurl, mesh_points):
+                image_b64 = dataurl.split(",")[1]
+                binary = base64.b64decode(image_b64)
+                image = np.asarray(bytearray(binary), dtype="uint8")
+                image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
+                
+                img_h, img_w, _ = image.shape
+                xTL, yTL = [mesh_points[27].x, mesh_points[27].y] # Top
+                xLL, yLL = [mesh_points[130].x, mesh_points[130].y] # Left
+                xBL, yBL = [mesh_points[23].x, mesh_points[23].y] # Bottom
+                xRL, yRL = [mesh_points[244].x, mesh_points[244].y] # Right
+
+                xTR, yTR = [mesh_points[257].x, mesh_points[257].y] # Top
+                xLR, yLR = [mesh_points[464].x, mesh_points[464].y] # Left
+                xBR, yBR = [mesh_points[253].x, mesh_points[253].y] # Bottom
+                xRR, yRR = [mesh_points[359].x, mesh_points[359].y] # Right
+
+                xTL = int(xTL * img_w)
+                xLL = int(xLL * img_w)
+                xBL = int(xBL * img_w)
+                xRL = int(xRL * img_w)
+                xTR = int(xTR * img_w)
+                xLR = int(xLR * img_w)
+                xBR = int(xBR * img_w)
+                xRR = int(xRR * img_w)
+
+                yTL = int(yTL * img_h)
+                yLL = int(yLL * img_h)
+                yBL = int(yBL * img_h)
+                yRL = int(yRL * img_h)
+                yTR = int(yTR * img_h)
+                yLR = int(yLR * img_h)
+                yBR = int(yBR * img_h)
+                yRR = int(yRR * img_h)
+
+
+                rightFrame = image[yTR - 2:yBR + 2, xLR - 2:xRR + 2]
+                leftFrame = image[yTL - 2:yBL + 2, xLL - 2:xRL + 2]
+
+                _, buffer = cv2.imencode(".jpg", rightFrame)
+                data_url_R = bytes_to_data_url(buffer)
+                link_R = f"data:image/jpg;base64,{data_url_R}"
+
+                _, buffer = cv2.imencode(".jpg", leftFrame)
+                data_url_L = bytes_to_data_url(buffer)
+                link_L = f"data:image/jpg;base64,{data_url_L}"
+
+                js.update_canvas(link_L, link_R)
+
+        </py-script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    </body>
+</html>
